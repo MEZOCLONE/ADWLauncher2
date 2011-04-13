@@ -178,6 +178,7 @@
 	<string name="shirtcuts_select_icon_type">Select the icon type</string>
     <string name="shirtcuts_select_icon_pack">Select icon pack</string>
     <string name="shirtcuts_revert">Revert</string>
+    <string name="shirtcuts_activity">Activity</string>
 	
 	<!-- Settings -->
 	<string name="settings_cat_homescreen">Homescreens</string>

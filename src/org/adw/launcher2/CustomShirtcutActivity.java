@@ -194,7 +194,6 @@ public class CustomShirtcutActivity extends Activity implements OnClickListener 
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
 		if(resultCode==RESULT_OK){
 			switch (requestCode) {
@@ -242,7 +241,7 @@ public class CustomShirtcutActivity extends Activity implements OnClickListener 
 				break;
 			case PICK_STANDARD_MENU:
 		        String applicationName = getResources().getString(R.string.group_applications);
-		        //TODO String activitiesName=getResources().getString(R.string.pref_label_activities);
+		        String activitiesName=getResources().getString(R.string.shirtcuts_activity);
 		        String launcheractionsName = getResources().getString(R.string.launcher_actions);
 		        String shortcutName = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME);
 
@@ -253,10 +252,10 @@ public class CustomShirtcutActivity extends Activity implements OnClickListener 
 		            Intent pickIntent = new Intent(Intent.ACTION_PICK_ACTIVITY);
 		            pickIntent.putExtra(Intent.EXTRA_INTENT, mainIntent);
 		            startActivityForResult(pickIntent, PICK_STANDARD_APPLICATION);
-//TODO		        } else if (activitiesName != null && activitiesName.equals(shortcutName)) {
-//					Intent picker=new Intent();
-//		        	picker.setClass(this, ActivityPickerActivity.class);
-//					startActivityForResult(picker,PICK_STANDARD_SHORTCUT);
+		        } else if (activitiesName != null && activitiesName.equals(shortcutName)) {
+					Intent picker=new Intent();
+		        	picker.setClass(this, ActivityPickerActivity.class);
+					startActivityForResult(picker,PICK_STANDARD_SHORTCUT);
 		        } else if (launcheractionsName != null && launcheractionsName.equals(shortcutName)) {
 		        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		        	builder.setTitle(getString(R.string.launcher_actions));
@@ -351,12 +350,11 @@ public class CustomShirtcutActivity extends Activity implements OnClickListener 
 	}
 	@Override
 	public void onClick(View v) {
-		//Intent picker=new Intent();
 		if(v.equals(btPickActivity)){
 	        Bundle bundle = new Bundle();
 	        ArrayList<String> shortcutNames = new ArrayList<String>();
 	        shortcutNames.add(getString(R.string.group_applications));
-	//TODO:        shortcutNames.add(getString(R.string.pref_label_activities));
+	        shortcutNames.add(getString(R.string.shirtcuts_activity));
 	        shortcutNames.add(getString(R.string.launcher_actions));
 	        bundle.putStringArrayList(Intent.EXTRA_SHORTCUT_NAME, shortcutNames);
 
