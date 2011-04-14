@@ -1221,18 +1221,26 @@ public class LauncherModel extends BroadcastReceiver {
         final ShortcutInfo info = new ShortcutInfo();
         info.itemType = LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT;
 
-        info.setTitle(c.getString(titleIndex));
-        info.setIcon(getIconFromCursor(c, iconIndex));
+        if (c != null) {
+        	if(titleIndex >= 0)
+        		info.setTitle(c.getString(titleIndex));
+        	if(iconIndex >= 0)
+        		info.setIcon(getIconFromCursor(c, iconIndex));
+        }
+
         return info;
     }
 
     static Bitmap getIconFromCursor(Cursor c, int iconIndex) {
-        byte[] data = c.getBlob(iconIndex);
-        try {
-            return BitmapFactory.decodeByteArray(data, 0, data.length);
-        } catch (Exception e) {
-            return null;
-        }
+    	if (c != null && iconIndex >= 0) {
+	        byte[] data = c.getBlob(iconIndex);
+	        try {
+	            return BitmapFactory.decodeByteArray(data, 0, data.length);
+	        } catch (Exception e) {
+	            return null;
+	        }
+    	}
+    	return null;
     }
 
     ShortcutInfo addShortcut(Context context, Intent data,
