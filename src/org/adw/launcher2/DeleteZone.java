@@ -127,7 +127,7 @@ public class DeleteZone extends ImageView implements DropTarget, DragController.
                 }.start();
             }
         }
-        LauncherModel.deleteItemFromDatabase(mLauncher, item);
+        mLauncher.getModel().deleteItemFromDatabase(mLauncher, item);
     }
 
     public void onDragEnter(DragSource source, int x, int y, int xOffset, int yOffset,

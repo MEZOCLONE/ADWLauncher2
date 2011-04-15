@@ -1438,7 +1438,7 @@ public class Workspace extends WidgetSpace implements DropTarget, DragSource, Dr
                             if (Intent.ACTION_MAIN.equals(intent.getAction()) && name != null) {
                                 for (String packageName: packageNames) {
                                     if (packageName.equals(name.getPackageName())) {
-                                        LauncherModel.deleteItemFromDatabase(mLauncher, info);
+                                        mLauncher.getModel().deleteItemFromDatabase(mLauncher, info);
                                         childrenToRemove.add(view);
                                     }
                                 }
@@ -1459,7 +1459,7 @@ public class Workspace extends WidgetSpace implements DropTarget, DragSource, Dr
                                     for (String packageName: packageNames) {
                                         if (packageName.equals(name.getPackageName())) {
                                             toRemove.add(appInfo);
-                                            LauncherModel.deleteItemFromDatabase(mLauncher, appInfo);
+                                            mLauncher.getModel().deleteItemFromDatabase(mLauncher, appInfo);
                                             removedFromFolder = true;
                                         }
                                     }
@@ -1480,7 +1480,7 @@ public class Workspace extends WidgetSpace implements DropTarget, DragSource, Dr
                             if (providerInfo != null) {
                                 for (String packageName: packageNames) {
                                     if (packageName.equals(providerInfo.packageName)) {
-                                        LauncherModel.deleteItemFromDatabase(mLauncher, info);
+                                        mLauncher.getModel().deleteItemFromDatabase(mLauncher, info);
                                         childrenToRemove.add(view);
                                     }
                                 }
@@ -1492,7 +1492,7 @@ public class Workspace extends WidgetSpace implements DropTarget, DragSource, Dr
                             if (provider != null) {
                                 for (String packageName: packageNames) {
                                     if (packageName.equals(provider.provider.getPackageName())) {
-                                        LauncherModel.deleteItemFromDatabase(mLauncher, info);
+                                    	mLauncher.getModel().deleteItemFromDatabase(mLauncher, info);
                                         childrenToRemove.add(view);
                                     }
                                 }

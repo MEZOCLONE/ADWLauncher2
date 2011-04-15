@@ -260,7 +260,7 @@ public class LauncherModel extends BroadcastReceiver {
      * @param context
      * @param item
      */
-    static void deleteItemFromDatabase(Context context, ItemInfo item) {
+    void deleteItemFromDatabase(Context context, ItemInfo item) {
         final ContentResolver cr = context.getContentResolver();
         final Uri uriToDelete = LauncherSettings.Favorites.getContentUri(item.id, false);
         sWorker.post(new Runnable() {
@@ -268,6 +268,10 @@ public class LauncherModel extends BroadcastReceiver {
                     cr.delete(uriToDelete, null, null);
                 }
             });
+        if (mItems.contains(item))
+        	mItems.remove(item);
+        if (mAdditionalDrawerItems.contains(item))
+        	mAdditionalDrawerItems.remove(item);
     }
 
     /**

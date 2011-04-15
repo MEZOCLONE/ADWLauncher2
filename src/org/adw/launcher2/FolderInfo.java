@@ -54,7 +54,7 @@ class FolderInfo extends IconItemInfo {
 				}
 				else
 					launcher.removeDesktopItem(this);
-				LauncherModel.deleteItemFromDatabase(launcher, this);
+				launcher.getModel().deleteItemFromDatabase(launcher, this);
 			} break;
 			default:
 				super.executeAction(action, view, launcher);

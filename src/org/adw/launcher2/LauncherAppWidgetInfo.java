@@ -74,7 +74,7 @@ class LauncherAppWidgetInfo extends ItemInfo implements ItemInfo.ItemPackage {
 			case ACTION_DELETE: {
 				((ViewGroup) hostView.getParent()).removeView(hostView);
 				launcher.removeAppWidget(this);
-				LauncherModel.deleteItemFromDatabase(launcher, this);
+				launcher.getModel().deleteItemFromDatabase(launcher, this);
 			} break;
 			case ACTION_RESIZE: {
 				launcher.editWidget(view);

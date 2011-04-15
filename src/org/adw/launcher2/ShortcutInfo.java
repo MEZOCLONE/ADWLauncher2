@@ -118,7 +118,7 @@ public class ShortcutInfo extends IconItemInfo implements ItemInfo.ItemPackage {
 		switch(action.getId()) {
 			case ACTION_DELETE: {
 				launcher.removeDesktopItem(this);
-				LauncherModel.deleteItemFromDatabase(launcher, this);
+				launcher.getModel().deleteItemFromDatabase(launcher, this);
 			} break;
 			default: super.executeAction(action, view, launcher);
 		}
