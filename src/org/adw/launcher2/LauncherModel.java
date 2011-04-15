@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.adw.launcher2.appdb.AppDB;
 import org.adw.launcher2.settings.LauncherSettings;
+import org.adw.launcher2.settings.LauncherSettings.Favorites;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
@@ -118,7 +119,7 @@ public class LauncherModel extends BroadcastReceiver {
      * Adds an item to the DB if it was not created previously, or move it to a new
      * <container, screen, cellX, cellY>
      */
-    static void addOrMoveItemInDatabase(Context context, ItemInfo item, long container,
+    void addOrMoveItemInDatabase(Context context, ItemInfo item, long container,
             int screen, int cellX, int cellY) {
         if (item.container == ItemInfo.NO_ID) {
             // From all apps
@@ -223,7 +224,7 @@ public class LauncherModel extends BroadcastReceiver {
      * Add an item to the database in a specified container. Sets the container, screen, cellX and
      * cellY fields of the item. Also assigns an ID to the item.
      */
-    static void addItemToDatabase(Context context, ItemInfo item, long container,
+    void addItemToDatabase(Context context, ItemInfo item, long container,
             int screen, int cellX, int cellY, boolean notify) {
         item.container = container;
         item.screen = screen;
@@ -240,6 +241,14 @@ public class LauncherModel extends BroadcastReceiver {
 
         if (result != null) {
             item.id = Integer.parseInt(result.getPathSegments().get(1));
+        }
+
+        if (item instanceof IconItemInfo) {
+        	IconItemInfo iii = (IconItemInfo)item;
+        	if (container == Favorites.CONTAINER_DRAWER)
+        		mAdditionalDrawerItems.add(iii);
+        	else if (container == Favorites.CONTAINER_DESKTOP)
+        		mItems.add(iii);
         }
     }
 

@@ -1210,7 +1210,7 @@ public class Workspace extends WidgetSpace implements DropTarget, DragSource, Dr
         cellLayout.onDropChild(view, mTargetCell);
         CellLayout.LayoutParams lp = (CellLayout.LayoutParams) view.getLayoutParams();
 
-        LauncherModel.addOrMoveItemInDatabase(mLauncher, info,
+        mLauncher.getModel().addOrMoveItemInDatabase(mLauncher, info,
                 LauncherSettings.Favorites.CONTAINER_DESKTOP, mCurrentScreen, lp.cellX, lp.cellY);
     }
 

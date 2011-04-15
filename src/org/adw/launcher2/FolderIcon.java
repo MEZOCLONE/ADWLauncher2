@@ -87,7 +87,7 @@ public class FolderIcon extends BubbleTextView implements DropTarget {
         if (dragInfo instanceof ShortcutInfo) {
         	item = (ShortcutInfo)dragInfo;
         	mInfo.add(item);
-        	LauncherModel.addOrMoveItemInDatabase(mLauncher, item, mInfo.id, 0, 0, 0);
+        	mLauncher.getModel().addOrMoveItemInDatabase(mLauncher, item, mInfo.id, 0, 0, 0);
         }
     }
 

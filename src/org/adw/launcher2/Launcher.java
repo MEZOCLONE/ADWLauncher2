@@ -1078,7 +1078,7 @@ public final class Launcher extends Activity
         launcherInfo.spanX = spans[0];
         launcherInfo.spanY = spans[1];
 
-        LauncherModel.addItemToDatabase(this, launcherInfo,
+        mModel.addItemToDatabase(this, launcherInfo,
                 LauncherSettings.Favorites.CONTAINER_DESKTOP,
                 mWorkspace.getCurrentScreen(), xy[0], xy[1], false);
 
@@ -1418,7 +1418,7 @@ public final class Launcher extends Activity
         if (!findSingleSlot(cellInfo)) return;
 
         // Update the model
-        LauncherModel.addItemToDatabase(this, folderInfo,
+        mModel.addItemToDatabase(this, folderInfo,
                 LauncherSettings.Favorites.CONTAINER_DESKTOP,
                 mWorkspace.getCurrentScreen(), cellInfo.cellX, cellInfo.cellY, false);
         sFolders.put(folderInfo.id, folderInfo);
@@ -1493,14 +1493,12 @@ public final class Launcher extends Activity
                 LiveFolders.DISPLAY_MODE_GRID);
 
         if (cellInfo != null) {
-        	LauncherModel.addItemToDatabase(context, info, Favorites.CONTAINER_DESKTOP,
+        	mModel.addItemToDatabase(context, info, Favorites.CONTAINER_DESKTOP,
         			cellInfo.screen, cellInfo.cellX, cellInfo.cellY, notify);
             sFolders.put(info.id, info);
-            mModel.mItems.add(info);
         } else {
-        	LauncherModel.addItemToDatabase(context, info, Favorites.CONTAINER_DRAWER,
+        	mModel.addItemToDatabase(context, info, Favorites.CONTAINER_DRAWER,
         			ItemInfo.NO_ID, 0, 0, notify);
-        	mModel.mAdditionalDrawerItems.add(info);
         }
 
         return info;
@@ -1533,7 +1531,7 @@ public final class Launcher extends Activity
     	UserFolderInfo folderInfo = new UserFolderInfo();
         folderInfo.setTitle(getText(R.string.folder_name));
 
-    	LauncherModel.addItemToDatabase(this, folderInfo, Favorites.CONTAINER_DRAWER, -1, 0, 0, false);
+    	mModel.addItemToDatabase(this, folderInfo, Favorites.CONTAINER_DRAWER, -1, 0, 0, false);
     	ArrayList<IconItemInfo> list = new ArrayList<IconItemInfo>();
     	list.add(folderInfo);
     	mAllAppsGrid.addApps(list);

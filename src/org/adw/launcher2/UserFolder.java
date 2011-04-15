@@ -47,7 +47,7 @@ public class UserFolder extends Folder implements DropTarget {
             DragView dragView, Object dragInfo) {
         ShortcutInfo item= (ShortcutInfo)dragInfo;
         ((ShortcutsAdapter)mContent.getAdapter()).add(item);
-        LauncherModel.addOrMoveItemInDatabase(mLauncher, item, mInfo.id, 0, 0, 0);
+        mLauncher.getModel().addOrMoveItemInDatabase(mLauncher, item, mInfo.id, 0, 0, 0);
     }
 
     public void onDragEnter(DragSource source, int x, int y, int xOffset, int yOffset,
