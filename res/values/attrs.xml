@@ -86,4 +86,14 @@
     <declare-styleable name="ClippedImageView">
         <attr name="ignoreZone" format="dimension" />
     </declare-styleable>
+    
+    <declare-styleable name="MiniLauncher">
+        <attr name="orientation">
+            <enum name="vertical" value="0" />
+            <enum name="horizontal" value="1" />
+        </attr>
+        <attr name="cellWidth"  />
+        <attr name="cellHeight"  />
+        <attr name="cells" format="integer" />
+    </declare-styleable>
 </resources>

@@ -131,7 +131,7 @@ public class LauncherSettings {
          * The icon is a resource identified by a package name and an integer id.
          */
         public static final int CONTAINER_DESKTOP = -100;
-
+        public static final int CONTAINER_DOCKBAR = -150;
         public static final int CONTAINER_DRAWER = -200;
 
         /**
