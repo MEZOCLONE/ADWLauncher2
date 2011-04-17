@@ -74,7 +74,7 @@
         android:layout_width="@dimen/delete_zone_size"
         android:layout_height="@dimen/delete_zone_size"
         android:paddingTop="@dimen/delete_zone_padding"
-        android:layout_gravity="bottom|center_horizontal"
+        android:layout_gravity="top|center_horizontal"
 
         android:scaleType="center"
         android:src="@drawable/delete_zone_selector"
@@ -82,11 +82,24 @@
         launcher:direction="horizontal"
         />
 
+	<org.adw.launcher2.MiniLauncher
+		android:id="@+id/mini_launcher"
+	    	android:layout_width="fill_parent"
+	    	launcher:cellWidth="50dip"
+	    	launcher:cellHeight="55dip"
+	    	launcher:cells="6"
+	    	launcher:orientation="horizontal"
+	    	android:padding="0dip"
+		android:layout_height="@dimen/button_bar_height"
+        android:layout_gravity="bottom|center_horizontal"
+        android:paddingTop="2dip"
+	/>
+
     <RelativeLayout
         android:id="@+id/all_apps_button_cluster"
         android:layout_width="fill_parent"
         android:layout_height="@dimen/button_bar_height"
-        android:layout_gravity="bottom|center_horizontal"
+        android:layout_gravity="top|center_horizontal"
         android:paddingTop="2dip"
         >
 

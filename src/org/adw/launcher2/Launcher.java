@@ -230,11 +230,14 @@ public final class Launcher extends Activity
     private Intent[] mHotseats = null;
     private Drawable[] mHotseatIcons = null;
     private CharSequence[] mHotseatLabels = null;
+    
+    private MiniLauncher mDockbar = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        
+        LauncherActions.getInstance().init(this);
         LauncherApplication app = ((LauncherApplication)getApplication());
         mModel = app.setLauncher(this);
         mIconCache = app.getIconCache();
@@ -242,6 +245,7 @@ public final class Launcher extends Activity
         mDragController = new DragController(this);
         mInflater = getLayoutInflater();
         Preferences.getInstance().setLauncher(this);
+        
 
         mAppWidgetManager = AppWidgetManager.getInstance(this);
         mAppWidgetHost = new LauncherAppWidgetHost(this, APPWIDGET_HOST_ID);
@@ -280,7 +284,6 @@ public final class Launcher extends Activity
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         registerReceiver(mCloseSystemDialogsReceiver, filter);
-        LauncherActions.getInstance().init(this);
     }
 
     private void checkForLocaleChange() {
@@ -837,6 +840,12 @@ public final class Launcher extends Activity
         ((View) mAllAppsGrid).setWillNotDraw(false); // We don't want a hole punched in our window.
         // Manage focusability manually since this thing is always visible
         ((View) mAllAppsGrid).setFocusable(false);
+        
+        mDockbar = (MiniLauncher)findViewById(R.id.mini_launcher);
+        if (mDockbar != null) {
+        	mDockbar.setLauncher(this);
+        	mDockbar.setDragController(mDragController);
+        }
 
         mWorkspace = (Workspace) mDragLayer.findViewById(R.id.workspace);
         final Workspace workspace = mWorkspace;
@@ -884,6 +893,7 @@ public final class Launcher extends Activity
         // The order here is bottom to top.
         dragController.addDropTarget(workspace);
         dragController.addDropTarget(deleteZone);
+        dragController.addDropTarget(mDockbar);
     }
 
     public void previousScreen(View v) {
@@ -928,6 +938,24 @@ public final class Launcher extends Activity
     View createShortcut(ShortcutInfo info) {
         return createShortcut(R.layout.application,
                 (ViewGroup) mWorkspace.getChildAt(mWorkspace.getCurrentScreen()), info);
+    }
+    
+    /**
+     * ADW: Create a copy of an application icon/shortcut with a reflection
+     * @param layoutResId
+     * @param parent
+     * @param info
+     * @return
+     */
+    View createSmallShortcut(int layoutResId, ViewGroup parent, IconItemInfo info) {
+        CounterImageView favorite = (CounterImageView) mInflater.inflate(layoutResId, parent, false);
+
+        favorite.setImageDrawable(Utilities.drawReflection(info.getIcon(mIconCache), this));
+        favorite.setTag(info);
+        favorite.setOnClickListener(this);
+        //ADW: Counters stuff
+        //TODO: favorite.setCounter(info.counter, info.counterColor);
+        return favorite;
     }
 
     /**

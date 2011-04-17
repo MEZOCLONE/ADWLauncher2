@@ -17,6 +17,8 @@
 package org.adw.launcher2;
 
 import org.adw.launcher2.FlingGesture.FlingListener;
+import org.adw.launcher2.actions.DefaultAction;
+import org.adw.launcher2.actions.LauncherActions;
 import org.adw.launcher2.settings.LauncherSettings;
 import org.adw.launcher2.settings.LauncherSettings.Favorites;
 
@@ -29,6 +31,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -197,7 +200,8 @@ public class MiniLauncher extends ViewGroup implements View.OnLongClickListener,
 	@Override
 	public void onDragEnter(DragSource source, int x, int y, int xOffset,
 			int yOffset, DragView dragView, Object dragInfo) {
-    	mBackground.startTransition(200);
+		if (mBackground != null)
+			mBackground.startTransition(200);
     }
 
 	@Override
@@ -207,7 +211,8 @@ public class MiniLauncher extends ViewGroup implements View.OnLongClickListener,
 
     @Override
     public void onDragExit(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo) {
-    	mBackground.resetTransition();
+    	if (mBackground != null)
+    		mBackground.resetTransition();
     }
 
 	@Override
@@ -231,13 +236,10 @@ public class MiniLauncher extends ViewGroup implements View.OnLongClickListener,
                 // Came from all apps -- make a copy
                 info = new ShortcutInfo((ShortcutInfo) info);
             }
-            view = mLauncher.createSmallShortcut(R.layout.small_application, this, info);
-            break;
         case LauncherSettings.Favorites.ITEM_TYPE_LIVE_FOLDER:
-            view = mLauncher.createSmallLiveFolder(R.layout.small_application, this, info);
-            break;
         case LauncherSettings.Favorites.ITEM_TYPE_USER_FOLDER:
-            view = mLauncher.createSmallFolder(R.layout.small_application, this, info);
+        	if (info instanceof IconItemInfo)
+        		view = mLauncher.createSmallShortcut(R.layout.small_application, this, (IconItemInfo)info);
             break;
         case LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET:
         default:
@@ -278,6 +280,12 @@ public class MiniLauncher extends ViewGroup implements View.OnLongClickListener,
 
     void setLauncher(Launcher launcher) {
         mLauncher = launcher;
+        DefaultAction action = DefaultAction.getAction(mLauncher, DefaultAction.ACTION_OPENCLOSE_DRAWER);
+        Intent intent = LauncherActions.getInstance().getIntentForAction(action);
+        ShortcutInfo info = mLauncher.getModel().getShortcutInfo(intent, mLauncher);
+        info.intent = intent;
+        info.setTitle("foobar");
+        this.addItemInDockBar(info);
     }
 
 	@Override
