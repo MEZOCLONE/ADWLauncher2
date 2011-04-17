@@ -1,5 +1,6 @@
 .classpath
 .metadata
+.settings
 default.properties
 .project
 bin/
