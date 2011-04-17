@@ -29,6 +29,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -81,9 +82,9 @@ public class MiniLauncher extends ViewGroup implements View.OnLongClickListener,
 		setHapticFeedbackEnabled(true);
 		TypedArray a=context.obtainStyledAttributes(attrs,R.styleable.MiniLauncher,defStyle,0);
 		mOrientation=a.getInt(R.styleable.MiniLauncher_orientation, mOrientation);
-		mNumCells=a.getInt(R.styleable.MiniLauncher_cells, mNumCells);
-		mCellWidth=a.getDimensionPixelSize(R.styleable.MiniLauncher_cellWidth, mCellWidth);
-		mCellHeight=a.getDimensionPixelSize(R.styleable.MiniLauncher_cellHeight, mCellHeight);
+		
+		mCellWidth = mCellHeight = getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
+		
         mScroller = new Scroller(getContext());
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         mFlingGesture.setListener(this);
@@ -289,10 +290,20 @@ public class MiniLauncher extends ViewGroup implements View.OnLongClickListener,
         	child.measure(mCellWidth, mCellHeight);
         }
 
-		if(mOrientation==HORIZONTAL){
+        
+        final int newNumCells;
+        
+		if(mOrientation==HORIZONTAL){						
 			super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(mCellHeight, MeasureSpec.AT_MOST));
-		}else{
+			newNumCells = getMeasuredWidth() / mCellWidth;
+		}else{			
 			super.onMeasure(MeasureSpec.makeMeasureSpec(mCellWidth, MeasureSpec.AT_MOST),heightMeasureSpec);
+			newNumCells = getMeasuredHeight() / mCellHeight;
+		}
+		if (newNumCells != mNumCells) {
+			mNumCells = newNumCells;
+			Log.d("BOOMBULER", "NUMCELLS: "+mNumCells);
+			invalidate();
 		}
 	}
 

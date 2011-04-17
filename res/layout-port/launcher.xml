@@ -84,12 +84,9 @@
 
 	<org.adw.launcher2.MiniLauncher
 		android:id="@+id/mini_launcher"
-	    	android:layout_width="fill_parent"
-	    	launcher:cellWidth="50dip"
-	    	launcher:cellHeight="55dip"
-	    	launcher:cells="6"
-	    	launcher:orientation="horizontal"
-	    	android:padding="0dip"
+	    android:layout_width="fill_parent"
+	    launcher:orientation="horizontal"
+	    android:padding="0dip"
 		android:layout_height="@dimen/button_bar_height"
         android:layout_gravity="bottom|center_horizontal"
         android:paddingTop="2dip"
