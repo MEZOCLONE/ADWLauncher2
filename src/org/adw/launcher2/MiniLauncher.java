@@ -29,8 +29,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -302,7 +300,6 @@ public class MiniLauncher extends ViewGroup implements View.OnLongClickListener,
 		}
 		if (newNumCells != mNumCells) {
 			mNumCells = newNumCells;
-			Log.d("BOOMBULER", "NUMCELLS: "+mNumCells);
 			invalidate();
 		}
 	}
