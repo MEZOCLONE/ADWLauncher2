@@ -73,7 +73,7 @@
     <declare-styleable name="Favorite">
         <attr name="className" format="string" />
         <attr name="packageName" format="string" />
-        <attr name="screen" format="string" />
+        <attr name="screen" format="string" />        
         <attr name="x" format="string" />
         <attr name="y" format="string" />
         <attr name="spanX" format="string" />
@@ -81,6 +81,7 @@
         <attr name="icon" format="reference" />  
         <attr name="title" format="reference" />
         <attr name="uri" format="string" />
+        <attr name="container" format="string" />
     </declare-styleable>
 
     <declare-styleable name="ClippedImageView">

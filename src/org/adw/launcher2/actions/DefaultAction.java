@@ -72,23 +72,26 @@ public class DefaultAction implements LauncherActions.Action {
 	}
 
 	@Override
-	public boolean runIntent(Intent intent) {
+	public void runIntent(Intent intent) {
+		fireHomeBinding(mBindingValue);
+	}
+	
+	public boolean isIntent(Intent intent) {
 		if (intent.hasExtra(EXTRA_BINDINGVALUE))
 		{
 			int val = intent.getIntExtra(EXTRA_BINDINGVALUE, 0);
 			if (val == mBindingValue) {
-				fireHomeBinding(mBindingValue);
 				return true;
 			}
-
 		}
-
 		return false;
 	}
 
 	@Override
 	public int getIconResourceId() {
 		switch(mBindingValue) {
+		case ACTION_OPENCLOSE_DRAWER:
+				return R.drawable.all_apps_button_normal;
 			case ACTION_MANAGE_APPS:
 				return android.R.drawable.ic_menu_manage;
 			case ACTION_SHOW_NOTIFICATIONS:

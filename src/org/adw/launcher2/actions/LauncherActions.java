@@ -22,7 +22,9 @@ public class LauncherActions {
 
 		public void putIntentExtras(Intent intent);
 
-		public boolean runIntent(Intent intent);
+		public void runIntent(Intent intent);
+		
+		public boolean isIntent(Intent intent);
 
 		public int getIconResourceId();
 	}
@@ -65,9 +67,20 @@ public class LauncherActions {
 	void launch(Intent intent) {
 		final List<Action> actions = getList();
 		for(Action act : actions) {
-			if (act.runIntent(intent))
+			if (act.isIntent(intent)) {
+				act.runIntent(intent);
 				break;
+			}
 		}
+	}
+	
+	public Action getActionForIntent(Intent intent) {
+		final List<Action> actions = getList();
+		for(Action act : actions) {
+			if (act.isIntent(intent))
+				return act;
+		}
+		return null;
 	}
 
 

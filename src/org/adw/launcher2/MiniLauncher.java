@@ -17,8 +17,6 @@
 package org.adw.launcher2;
 
 import org.adw.launcher2.FlingGesture.FlingListener;
-import org.adw.launcher2.actions.DefaultAction;
-import org.adw.launcher2.actions.LauncherActions;
 import org.adw.launcher2.settings.LauncherSettings;
 import org.adw.launcher2.settings.LauncherSettings.Favorites;
 
@@ -172,15 +170,16 @@ public class MiniLauncher extends ViewGroup implements View.OnLongClickListener,
         	break;
         case LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET:
         default:
-        	accept=false;
         	return;
         }
+        if (!(info instanceof IconItemInfo))
+        	return; // Make sure we accept it again...
         info.cellX=FindItemDropPos(x, y);
         //add it to launcher database
         if(accept){
 	        model.addOrMoveItemInDatabase(mLauncher, info,
 	                LauncherSettings.Favorites.CONTAINER_DOCKBAR, -1, info.cellX, -1);
-	        addItemInDockBar(info);
+	        addItemInDockBar((IconItemInfo)info);
 	        // Reorder the other items:
 	        for(int i = 0; i < getChildCount(); i++) {
 	        	View child = getChildAt(i);
@@ -228,7 +227,7 @@ public class MiniLauncher extends ViewGroup implements View.OnLongClickListener,
 		mDragger=dragger;
 	}
 
-    public void addItemInDockBar(ItemInfo info){
+    public void addItemInDockBar(IconItemInfo info){
     	View view=null;
         switch (info.itemType) {
         case LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT:
@@ -238,8 +237,7 @@ public class MiniLauncher extends ViewGroup implements View.OnLongClickListener,
             }
         case LauncherSettings.Favorites.ITEM_TYPE_LIVE_FOLDER:
         case LauncherSettings.Favorites.ITEM_TYPE_USER_FOLDER:
-        	if (info instanceof IconItemInfo)
-        		view = mLauncher.createSmallShortcut(R.layout.small_application, this, (IconItemInfo)info);
+        	view = mLauncher.createSmallShortcut(R.layout.small_application, this, info);
             break;
         case LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET:
         default:
@@ -280,12 +278,6 @@ public class MiniLauncher extends ViewGroup implements View.OnLongClickListener,
 
     void setLauncher(Launcher launcher) {
         mLauncher = launcher;
-        DefaultAction action = DefaultAction.getAction(mLauncher, DefaultAction.ACTION_OPENCLOSE_DRAWER);
-        Intent intent = LauncherActions.getInstance().getIntentForAction(action);
-        ShortcutInfo info = mLauncher.getModel().getShortcutInfo(intent, mLauncher);
-        info.intent = intent;
-        info.setTitle("foobar");
-        this.addItemInDockBar(info);
     }
 
 	@Override

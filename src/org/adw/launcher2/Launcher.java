@@ -59,7 +59,6 @@ import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -194,7 +193,6 @@ public final class Launcher extends Activity
     private FolderInfo mFolderInfo;
 
     private DeleteZone mDeleteZone;
-    private HandleView mHandleView;
     private AllAppsView mAllAppsGrid;
 
     private Bundle mSavedState;
@@ -226,11 +224,6 @@ public final class Launcher extends Activity
     private ImageView mPreviousView;
     private ImageView mNextView;
 
-    private String[] mHotseatConfig = null;
-    private Intent[] mHotseats = null;
-    private Drawable[] mHotseatIcons = null;
-    private CharSequence[] mHotseatLabels = null;
-    
     private MiniLauncher mDockbar = null;
 
     @Override
@@ -256,7 +249,6 @@ public final class Launcher extends Activity
                     Environment.getExternalStorageDirectory() + "/launcher");
         }
 
-        loadHotseats();
         checkForLocaleChange();
         setWallpaperDimension();
 
@@ -324,7 +316,6 @@ public final class Launcher extends Activity
             sLocaleConfiguration.mnc = mnc;
 
             mIconCache.flush();
-            loadHotseats();
 
             final LocaleConfiguration localeConfiguration = sLocaleConfiguration;
             new Thread("WriteLocaleConfiguration") {
@@ -405,6 +396,10 @@ public final class Launcher extends Activity
     public AllAppsView getAllAppsView() {
     	return mAllAppsGrid;
     }
+    
+    public MiniLauncher getDockbar() {
+    	return mDockbar;
+    }
 
     static int getScreen() {
         synchronized (sLock) {
@@ -427,151 +422,6 @@ public final class Launcher extends Activity
         final int width = isPortrait ? display.getWidth() : display.getHeight();
         final int height = isPortrait ? display.getHeight() : display.getWidth();
         wpm.suggestDesiredDimensions(width * WALLPAPER_SCREENS_SPAN, height);
-    }
-
-    // Note: This doesn't do all the client-id magic that BrowserProvider does
-    // in Browser. (http://b/2425179)
-    private Uri getDefaultBrowserUri() {
-        String url = getString(R.string.default_browser_url);
-        if (url.indexOf("{CID}") != -1) {
-            url = url.replace("{CID}", "android-google");
-        }
-        return Uri.parse(url);
-    }
-
-    // Load the Intent templates from arrays.xml to populate the hotseats. For
-    // each Intent, if it resolves to a single app, use that as the launch
-    // intent & use that app's label as the contentDescription. Otherwise,
-    // retain the ResolveActivity so the user can pick an app.
-    private void loadHotseats() {
-        if (mHotseatConfig == null) {
-            mHotseatConfig = getResources().getStringArray(R.array.hotseats);
-            if (mHotseatConfig.length > 0) {
-                mHotseats = new Intent[mHotseatConfig.length];
-                mHotseatLabels = new CharSequence[mHotseatConfig.length];
-                mHotseatIcons = new Drawable[mHotseatConfig.length];
-            } else {
-                mHotseats = null;
-                mHotseatIcons = null;
-                mHotseatLabels = null;
-            }
-
-            TypedArray hotseatIconDrawables = getResources().obtainTypedArray(R.array.hotseat_icons);
-            for (int i=0; i<mHotseatConfig.length; i++) {
-                // load icon for this slot; currently unrelated to the actual activity
-                try {
-                    mHotseatIcons[i] = hotseatIconDrawables.getDrawable(i);
-                } catch (ArrayIndexOutOfBoundsException ex) {
-                    Log.w(TAG, "Missing hotseat_icons array item #" + i);
-                    mHotseatIcons[i] = null;
-                }
-            }
-            hotseatIconDrawables.recycle();
-        }
-
-        PackageManager pm = getPackageManager();
-        for (int i=0; i<mHotseatConfig.length; i++) {
-            Intent intent = null;
-            if (mHotseatConfig[i].equals("*BROWSER*")) {
-                // magic value meaning "launch user's default web browser"
-                // replace it with a generic web request so we can see if there is indeed a default
-                String defaultUri = getString(R.string.default_browser_url);
-                intent = new Intent(
-                        Intent.ACTION_VIEW,
-                        ((defaultUri != null)
-                            ? Uri.parse(defaultUri)
-                            : getDefaultBrowserUri())
-                    ).addCategory(Intent.CATEGORY_BROWSABLE);
-                // note: if the user launches this without a default set, she
-                // will always be taken to the default URL above; this is
-                // unavoidable as we must specify a valid URL in order for the
-                // chooser to appear, and once the user selects something, that
-                // URL is unavoidably sent to the chosen app.
-            } else {
-                try {
-                    intent = Intent.parseUri(mHotseatConfig[i], 0);
-                } catch (java.net.URISyntaxException ex) {
-                    Log.w(TAG, "Invalid hotseat intent: " + mHotseatConfig[i]);
-                    // bogus; leave intent=null
-                }
-            }
-
-            if (intent == null) {
-                mHotseats[i] = null;
-                mHotseatLabels[i] = getText(R.string.activity_not_found);
-                continue;
-            }
-
-            if (LOGD) {
-                Log.d(TAG, "loadHotseats: hotseat " + i
-                    + " initial intent=["
-                    + intent.toUri(Intent.URI_INTENT_SCHEME)
-                    + "]");
-            }
-
-            ResolveInfo bestMatch = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
-            List<ResolveInfo> allMatches = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-            if (LOGD) {
-                Log.d(TAG, "Best match for intent: " + bestMatch);
-                Log.d(TAG, "All matches: ");
-                for (ResolveInfo ri : allMatches) {
-                    Log.d(TAG, "  --> " + ri);
-                }
-            }
-            // did this resolve to a single app, or the resolver?
-            if (allMatches.size() == 0 || bestMatch == null) {
-                // can't find any activity to handle this. let's leave the
-                // intent as-is and let Launcher show a toast when it fails
-                // to launch.
-                mHotseats[i] = intent;
-
-                // set accessibility text to "Not installed"
-                mHotseatLabels[i] = getText(R.string.activity_not_found);
-            } else {
-                boolean found = false;
-                for (ResolveInfo ri : allMatches) {
-                    if (bestMatch.activityInfo.name.equals(ri.activityInfo.name)
-                        && bestMatch.activityInfo.applicationInfo.packageName
-                            .equals(ri.activityInfo.applicationInfo.packageName)) {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    if (LOGD) Log.d(TAG, "Multiple options, no default yet");
-                    // the bestMatch is probably the ResolveActivity, meaning the
-                    // user has not yet selected a default
-                    // so: we'll keep the original intent for now
-                    mHotseats[i] = intent;
-
-                    // set the accessibility text to "Select shortcut"
-                    mHotseatLabels[i] = getText(R.string.title_select_shortcut);
-                } else {
-                    // we have an app!
-                    // now reconstruct the intent to launch it through the front
-                    // door
-                    ComponentName com = new ComponentName(
-                        bestMatch.activityInfo.applicationInfo.packageName,
-                        bestMatch.activityInfo.name);
-                    mHotseats[i] = new Intent(Intent.ACTION_MAIN).setComponent(com);
-
-                    // load the app label for accessibility
-                    mHotseatLabels[i] = bestMatch.activityInfo.loadLabel(pm);
-                }
-            }
-
-            if (LOGD) {
-                Log.d(TAG, "loadHotseats: hotseat " + i
-                    + " final intent=["
-                    + ((mHotseats[i] == null)
-                        ? "null"
-                        : mHotseats[i].toUri(Intent.URI_INTENT_SCHEME))
-                    + "] label=[" + mHotseatLabels[i]
-                    + "]"
-                    );
-            }
-        }
     }
 
     @Override
@@ -851,20 +701,7 @@ public final class Launcher extends Activity
         final Workspace workspace = mWorkspace;
         workspace.setHapticFeedbackEnabled(false);
 
-        DeleteZone deleteZone = (DeleteZone) mDragLayer.findViewById(R.id.delete_zone);
-        mDeleteZone = deleteZone;
-
-        mHandleView = (HandleView) findViewById(R.id.all_apps_button);
-        mHandleView.setLauncher(this);
-        mHandleView.setOnClickListener(this);
-        mHandleView.setOnLongClickListener(this);
-
-        ImageView hotseatLeft = (ImageView) findViewById(R.id.hotseat_left);
-        hotseatLeft.setContentDescription(mHotseatLabels[0]);
-        hotseatLeft.setImageDrawable(mHotseatIcons[0]);
-        ImageView hotseatRight = (ImageView) findViewById(R.id.hotseat_right);
-        hotseatRight.setContentDescription(mHotseatLabels[1]);
-        hotseatRight.setImageDrawable(mHotseatIcons[1]);
+        mDeleteZone = (DeleteZone) mDragLayer.findViewById(R.id.delete_zone);
 
         mPreviousView = (ImageView) mDragLayer.findViewById(R.id.previous_screen);
         mNextView = (ImageView) mDragLayer.findViewById(R.id.next_screen);
@@ -881,18 +718,17 @@ public final class Launcher extends Activity
         workspace.setDragController(dragController);
         workspace.setLauncher(this);
 
-        deleteZone.setLauncher(this);
-        deleteZone.setDragController(dragController);
-        deleteZone.setHandle(findViewById(R.id.all_apps_button_cluster));
+        mDeleteZone.setLauncher(this);
+        mDeleteZone.setDragController(dragController);
 
         dragController.setDragScoller(workspace);
-        dragController.setDragListener(deleteZone);
+        dragController.setDragListener(mDeleteZone);
         dragController.setScrollView(mDragLayer);
         dragController.setMoveTarget(workspace);
 
         // The order here is bottom to top.
         dragController.addDropTarget(workspace);
-        dragController.addDropTarget(deleteZone);
+        dragController.addDropTarget(mDeleteZone);
         dragController.addDropTarget(mDockbar);
     }
 
@@ -905,26 +741,6 @@ public final class Launcher extends Activity
     public void nextScreen(View v) {
         if (!isAllAppsVisible()) {
             mWorkspace.scrollRight();
-        }
-    }
-
-    public void launchHotSeat(View v) {
-        if (isAllAppsVisible()) return;
-
-        int index = -1;
-        if (v.getId() == R.id.hotseat_left) {
-            index = 0;
-        } else if (v.getId() == R.id.hotseat_right) {
-            index = 1;
-        }
-
-        // reload these every tap; you never know when they might change
-        loadHotseats();
-        if (index >= 0 && index < mHotseats.length && mHotseats[index] != null) {
-            startActivitySafely(
-                mHotseats[index],
-                "hotseat"
-            );
         }
     }
 
@@ -1684,12 +1500,6 @@ public final class Launcher extends Activity
             startActivitySafely(intent, tag);
         } else if (tag instanceof FolderInfo) {
             openFolder((FolderInfo) tag);
-        } else if (v == mHandleView) {
-            if (isAllAppsVisible()) {
-                closeAllApps(true);
-            } else {
-                showAllApps(true);
-            }
         }
     }
 
@@ -2523,6 +2333,11 @@ public final class Launcher extends Activity
     public void bindAllApplications(ArrayList<ShortcutInfo> apps, ArrayList<IconItemInfo> otherItems) {
         mAllAppsGrid.setApps(apps);
         mAllAppsGrid.addApps(otherItems);
+    }
+    
+    public void bindDockbar(ArrayList<IconItemInfo> items) {
+    	for(IconItemInfo item : items)
+    		mDockbar.addItemInDockBar(item);
     }
 
     /**

@@ -647,13 +647,13 @@ public class LauncherProvider extends ContentProvider {
 
                     values.clear();
                     values.put(LauncherSettings.Favorites.CONTAINER,
-                            LauncherSettings.Favorites.CONTAINER_DESKTOP);
+                            a.getString(R.styleable.Favorite_container));
                     values.put(LauncherSettings.Favorites.SCREEN,
                             a.getString(R.styleable.Favorite_screen));
                     values.put(LauncherSettings.Favorites.CELLX,
                             a.getString(R.styleable.Favorite_x));
                     values.put(LauncherSettings.Favorites.CELLY,
-                            a.getString(R.styleable.Favorite_y));
+                            a.getString(R.styleable.Favorite_y));                    
 
                     if (TAG_FAVORITE.equals(name)) {
                         added = addAppShortcut(db, values, a, packageManager, intent);
@@ -683,26 +683,35 @@ public class LauncherProvider extends ContentProvider {
         private boolean addAppShortcut(SQLiteDatabase db, ContentValues values, TypedArray a,
                 PackageManager packageManager, Intent intent) {
 
-            ActivityInfo info = null;
-            String packageName = a.getString(R.styleable.Favorite_packageName);
-            String className = a.getString(R.styleable.Favorite_className);
-            ComponentName cn = null;
-            try {
-                cn = new ComponentName(packageName, className);
-                info = packageManager.getActivityInfo(cn, 0);
-            } catch (PackageManager.NameNotFoundException nnfe) {
-                Log.e(TAG, "failed to add a shortcut!");
-                nnfe.printStackTrace();
+        	String uri = a.getString(R.styleable.Favorite_uri);
+        	if (uri == null || uri == "") { 
+	            ActivityInfo info = null;
+	            String packageName = a.getString(R.styleable.Favorite_packageName);
+	            String className = a.getString(R.styleable.Favorite_className);
+	            ComponentName cn = null;
+	            try {
+	                cn = new ComponentName(packageName, className);
+	                info = packageManager.getActivityInfo(cn, 0);
+	            } catch (PackageManager.NameNotFoundException nnfe) {
+	                Log.e(TAG, "failed to add a shortcut!");
+	                nnfe.printStackTrace();
+	            }
+	
+	            if (cn == null || info == null)
+	            	return false;
+	
+	            intent.setComponent(cn);
+	            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+	                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+	            values.put(Favorites.INTENT, intent.toUri(0));
+	            values.put(Favorites.TITLE, info.loadLabel(packageManager).toString());
+        	}
+        	else 
+        		values.put(Favorites.INTENT, uri);
+            if (!values.containsKey(Favorites.TITLE)) {
+            	values.put(Favorites.TITLE, a.getString(R.styleable.Favorite_title));
             }
-
-            if (cn == null || info == null)
-            	return false;
-
-            intent.setComponent(cn);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            values.put(Favorites.INTENT, intent.toUri(0));
-            values.put(Favorites.TITLE, info.loadLabel(packageManager).toString());
+        	
             values.put(Favorites.ITEM_TYPE, Favorites.ITEM_TYPE_SHORTCUT);
             values.put(Favorites.SPANX, 1);
             values.put(Favorites.SPANY, 1);

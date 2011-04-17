@@ -15,6 +15,16 @@
 -->
 
 <favorites xmlns:launcher="http://schemas.android.com/apk/res/org.adw.launcher2">
+	<!-- Dockbar -->
+	<favorite 
+        launcher:uri="#Intent;action=org.adw.launcher2.ACTION_LAUNCHERACTION;component=org.adw.launcher2/.actions.RunActionActivity;i.DefaultLauncherAction.EXTRA_BINDINGVALUE=1;end"
+        launcher:screen="-1"
+        launcher:x="0"
+        launcher:y="0"
+        launcher:container="-150" 
+        launcher:title="@string/action_opendrawer"/>
+
+
     <!--  Far-left screen [0] -->
         
     <!--  Middle screen [2] -->

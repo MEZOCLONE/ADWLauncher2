@@ -18,6 +18,10 @@ package org.adw.launcher2;
 
 import java.util.HashMap;
 
+import org.adw.launcher2.actions.LauncherActions;
+import org.adw.launcher2.actions.LauncherActions.Action;
+import org.adw.launcher2.actions.RunActionActivity;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +43,7 @@ public class IconCache {
         public String title;
     }
 
+    private final ComponentName mLauncherActionComponent;
     private final Bitmap mDefaultIcon;
     private final Context mContext;
     private final PackageManager mPackageManager;
@@ -49,6 +54,7 @@ public class IconCache {
         mContext = context;
         mPackageManager = context.getPackageManager();
         mDefaultIcon = makeDefaultIcon();
+        mLauncherActionComponent = new ComponentName(mContext, RunActionActivity.class);
     }
 
     public Bitmap getDefaultIcon() {
@@ -69,6 +75,12 @@ public class IconCache {
         d.draw(c);
         return b;
     }
+    
+    private Bitmap makeBitmapFromAction(Action action) {
+    	Drawable d = mContext.getResources().getDrawable(action.getIconResourceId());
+    	return Utilities.createIconBitmap(d, mContext);
+    }
+    
 
     /**
      * Remove any records for the supplied ComponentName.
@@ -102,16 +114,20 @@ public class IconCache {
 
     public Bitmap getIcon(Intent intent) {
         synchronized (mCache) {
-            ComponentName component = intent.getComponent();
+            ComponentName component = intent.getComponent();            
             CacheEntry entry = mCache.get(component);
+            
             if (component == null || entry == null || entry.icon == null) {
+                if (mLauncherActionComponent.equals(component)) {
+                	return makeBitmapFromAction(LauncherActions.getInstance().getActionForIntent(intent));                	 
+                }
             	final ResolveInfo resolveInfo = mPackageManager.resolveActivity(intent, 0);
 
 	            if (resolveInfo == null || component == null) {
 	                return mDefaultIcon;
 	            }
-
 	            return cacheLocked(component, resolveInfo).icon;
+                
             } else {
 	            return entry.icon;
             }

@@ -96,6 +96,7 @@ public class LauncherModel extends BroadcastReceiver {
         public void bindFolders(HashMap<Long,FolderInfo> folders);
         public void finishBindingItems();
         public void bindAppWidget(LauncherAppWidgetInfo info);
+        public void bindDockbar(ArrayList<IconItemInfo> items);
         public void bindAllApplications(ArrayList<ShortcutInfo> apps, ArrayList<IconItemInfo> otherItems);
         public void bindAppsAdded(ArrayList<? extends IconItemInfo> apps);
         public void bindAppsUpdated(ArrayList<ShortcutInfo> apps);
@@ -792,6 +793,7 @@ public class LauncherModel extends BroadcastReceiver {
                 ShortcutInfo info;
                 String intentDescription;
                 LauncherAppWidgetInfo appWidgetInfo;
+                final ArrayList<IconItemInfo> dockbarItems = new ArrayList<IconItemInfo>();
                 int container;
                 long id;
                 Intent intent;
@@ -829,6 +831,9 @@ public class LauncherModel extends BroadcastReceiver {
                                 case LauncherSettings.Favorites.CONTAINER_DESKTOP:
                                     mItems.add(info);
                                     break;
+                                case LauncherSettings.Favorites.CONTAINER_DOCKBAR:
+                                	dockbarItems.add(info);
+                                	break;
                                 default:
                                     // Item is in a user folder
                                     UserFolderInfo folderInfo =
@@ -872,6 +877,9 @@ public class LauncherModel extends BroadcastReceiver {
                                     break;
                                 case LauncherSettings.Favorites.CONTAINER_DRAWER:
                                 	mAdditionalDrawerItems.add(folderInfo);
+                                	break;
+                                case LauncherSettings.Favorites.CONTAINER_DOCKBAR:
+                                	dockbarItems.add(folderInfo);
                                 	break;
                             }
 
@@ -927,6 +935,9 @@ public class LauncherModel extends BroadcastReceiver {
                                     case LauncherSettings.Favorites.CONTAINER_DRAWER:
                                     	mAdditionalDrawerItems.add(liveFolderInfo);
                                     	break;
+                                    case LauncherSettings.Favorites.CONTAINER_DOCKBAR:
+                                    	dockbarItems.add(liveFolderInfo);
+                                    	break;
                                 }
                                 mFolders.put(liveFolderInfo.id, liveFolderInfo);
                             }
@@ -975,17 +986,31 @@ public class LauncherModel extends BroadcastReceiver {
                         Log.w(TAG, "Desktop items loading interrupted:", e);
                     }
                 }
+                
+                if (dockbarItems.size() > 0) {
+                	final Callbacks cbs = mCallbacks.get();
+                	if (cbs != null) {
+	                	mHandler.post(new Runnable() {
+							@Override
+							public void run() {
+								cbs.bindDockbar(dockbarItems);
+							}
+						});
+                	}
+                }
+                
             } finally {
                 c.close();
             }
 
+            
             if (mAdditionalDrawerItems.size() > 0) {
             	Callbacks cbs = mCallbacks.get();
             	if (cbs != null) {
             		cbs.bindAppsAdded(mAdditionalDrawerItems);
             	}
             }
-
+            
             if (itemsToRemove.size() > 0) {
                 ContentProviderClient client = contentResolver.acquireContentProviderClient(
                                 LauncherSettings.Favorites.CONTENT_URI);

@@ -27,7 +27,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -47,15 +46,12 @@ public class DeleteZone extends ImageView implements DropTarget, DragController.
 
     private AnimationSet mInAnimation;
     private AnimationSet mOutAnimation;
-    private Animation mHandleInAnimation;
-    private Animation mHandleOutAnimation;
 
     private final int mOrientation;
     private DragController mDragController;
 
     private final RectF mRegion = new RectF();
     private TransitionDrawable mTransition;
-    private View mHandle;
     private final Paint mTrashPaint = new Paint();
 
     public DeleteZone(Context context, AttributeSet attrs) {
@@ -158,7 +154,6 @@ public class DeleteZone extends ImageView implements DropTarget, DragController.
             mDragController.setDeleteRegion(mRegion);
             mTransition.resetTransition();
             startAnimation(mInAnimation);
-            mHandle.startAnimation(mHandleOutAnimation);
             setVisibility(VISIBLE);
         }
     }
@@ -168,7 +163,6 @@ public class DeleteZone extends ImageView implements DropTarget, DragController.
             mTrashMode = false;
             mDragController.setDeleteRegion(null);
             startAnimation(mOutAnimation);
-            mHandle.startAnimation(mHandleInAnimation);
             setVisibility(GONE);
         }
     }
@@ -190,10 +184,6 @@ public class DeleteZone extends ImageView implements DropTarget, DragController.
             }
             animationSet.setDuration(ANIMATION_DURATION);
         }
-        if (mHandleInAnimation == null) {
-            mHandleInAnimation = new AlphaAnimation(0.0f, 1.0f);
-            mHandleInAnimation.setDuration(ANIMATION_DURATION);
-        }
         if (mOutAnimation == null) {
             mOutAnimation = new FastAnimationSet();
             final AnimationSet animationSet = mOutAnimation;
@@ -210,11 +200,6 @@ public class DeleteZone extends ImageView implements DropTarget, DragController.
             }
             animationSet.setDuration(ANIMATION_DURATION);
         }
-        if (mHandleOutAnimation == null) {
-            mHandleOutAnimation = new AlphaAnimation(1.0f, 0.0f);
-            mHandleOutAnimation.setFillAfter(true);
-            mHandleOutAnimation.setDuration(ANIMATION_DURATION);
-        }
     }
 
     void setLauncher(Launcher launcher) {
@@ -223,10 +208,6 @@ public class DeleteZone extends ImageView implements DropTarget, DragController.
 
     void setDragController(DragController dragController) {
         mDragController = dragController;
-    }
-
-    void setHandle(View view) {
-        mHandle = view;
     }
 
     private static class FastTranslateAnimation extends TranslateAnimation {
