@@ -2,6 +2,7 @@ package mobi.intuitit.android.widget;
 
 import java.util.HashMap;
 
+import android.widget.*;
 import mobi.intuitit.android.content.LauncherIntent;
 import mobi.intuitit.android.widget.WidgetListAdapter.ViewHolder;
 import android.app.Activity;
@@ -28,11 +29,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -186,7 +182,6 @@ public abstract class WidgetSpace extends ViewGroup {
          * @param widgetView
          * @param viewId
          * @param intent
-         * @param start
          *            true to start, false to stop
          * @throws TweenAnimationException
          * @throws AnimationException
@@ -331,7 +326,7 @@ public abstract class WidgetSpace extends ViewGroup {
 
     // listview informations storage for each provider data Uri
     class ScrollViewInfos {
-        AbsListView lv = null;
+        AdapterView lv = null;
         int widgetId = -1;
         ContentObserver obs;
         Handler obsHandler;
@@ -355,7 +350,7 @@ public abstract class WidgetSpace extends ViewGroup {
         for (ScrollViewInfos item : mScrollViewCursorInfos.values()) {
             if (item.lv != null) {
                 if (CLEAR_DATA_CACHE) {
-                	ListAdapter adapter = item.lv.getAdapter();
+                	Adapter adapter = item.lv.getAdapter();
                     if (adapter != null) {
                     	if (adapter instanceof WidgetListAdapter)
                     		((WidgetListAdapter)adapter).clearDataCache();
@@ -503,25 +498,25 @@ public abstract class WidgetSpace extends ViewGroup {
                         widgetView.getAppWidgetInfo().provider.getPackageName(),
                         Context.CONTEXT_IGNORE_SECURITY);
 
-                AbsListView lv = null;
+                AdapterView lv = null;
 
                 View dummyView = widgetView.findViewById(dummyViewId);
                 if (dummyView == null)
                     return "Dummy view needed.";
 
-                if (dummyView instanceof AbsListView)
-                    lv = (AbsListView) dummyView;
+                if (dummyView instanceof AdapterView)
+                    lv = (AdapterView) dummyView;
                 else {
                     dummyView = null;
                     if (intent.hasExtra(LauncherIntent.Extra.Scroll.EXTRA_LISTVIEW_REMOTEVIEWS)) {
                         SimpleRemoteViews rvs = (SimpleRemoteViews)intent.getParcelableExtra(LauncherIntent.Extra.Scroll.EXTRA_LISTVIEW_REMOTEVIEWS);
                         dummyView = rvs.apply(remoteContext, null);
-                        if (dummyView instanceof AbsListView) {
-                            lv = (AbsListView) dummyView;
+                        if (dummyView instanceof AdapterView) {
+                            lv = (AdapterView) dummyView;
                             if (!replaceView(widgetView, dummyViewId, lv))
                                 return "Cannot replace the dummy with the list view inflated from the passed RemoteViews.";
                         } else
-                            return "could not create AbsListView from the passed RemoteViews";
+                            return "could not create AdapterView from the passed RemoteViews";
                     } else {
                         // inflate listview
                         final int listViewResId = intent.getIntExtra(
@@ -535,8 +530,8 @@ public abstract class WidgetSpace extends ViewGroup {
                             // Inflate it
                             LayoutInflater inflater = LayoutInflater.from(remoteContext);
                             dummyView = inflater.inflate(listViewResId, null);
-                            if (dummyView instanceof AbsListView) {
-                                lv = (AbsListView) dummyView;
+                            if (dummyView instanceof AdapterView) {
+                                lv = (AdapterView) dummyView;
                                 if (!replaceView(widgetView, dummyViewId, lv))
                                     return "Cannot replace the dummy with the list view inflated from the passed layout resource id.";
                             } else
@@ -596,7 +591,7 @@ public abstract class WidgetSpace extends ViewGroup {
                     lv.setOnItemClickListener(new WidgetItemListener(appWidgetProvider,
                             appWidgetId, dummyViewId));
                 lv.setFocusableInTouchMode(false);
-                lv.setOnScrollListener(this);
+                ((AbsListView)lv).setOnScrollListener(this);
 
                 // store informations in static memory
                 listViewInfos.widgetId = appWidgetId;

@@ -21,12 +21,7 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
+import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
@@ -37,7 +32,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 public class Folder extends LinearLayout implements DragSource, OnItemLongClickListener,
         OnItemClickListener, OnClickListener, View.OnLongClickListener {
 
-    protected AbsListView mContent;
+    protected AdapterView mContent;
     protected DragController mDragController;
 
     protected Launcher mLauncher;
@@ -66,7 +61,7 @@ public class Folder extends LinearLayout implements DragSource, OnItemLongClickL
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mContent = (AbsListView) findViewById(R.id.folder_content);
+        mContent = (AdapterView) findViewById(R.id.folder_content);
         mContent.setOnItemClickListener(this);
         mContent.setOnItemLongClickListener(this);
 
@@ -128,7 +123,7 @@ public class Folder extends LinearLayout implements DragSource, OnItemLongClickL
      *
      * @param adapter The list of applications to display in the folder.
      */
-    void setContentAdapter(BaseAdapter adapter) {
+    void setContentAdapter(Adapter adapter) {
         mContent.setAdapter(adapter);
     }
 
