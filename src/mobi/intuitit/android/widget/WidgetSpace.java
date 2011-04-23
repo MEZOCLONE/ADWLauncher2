@@ -591,7 +591,8 @@ public abstract class WidgetSpace extends ViewGroup {
                     lv.setOnItemClickListener(new WidgetItemListener(appWidgetProvider,
                             appWidgetId, dummyViewId));
                 lv.setFocusableInTouchMode(false);
-                ((AbsListView)lv).setOnScrollListener(this);
+                if (lv instanceof AbsListView)
+                	((AbsListView)lv).setOnScrollListener(this);
 
                 // store informations in static memory
                 listViewInfos.widgetId = appWidgetId;
