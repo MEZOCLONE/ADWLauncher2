@@ -32,7 +32,8 @@ import android.widget.AdapterView.OnItemLongClickListener;
 public class Folder extends LinearLayout implements DragSource, OnItemLongClickListener,
         OnItemClickListener, OnClickListener, View.OnLongClickListener {
 
-    protected AdapterView mContent;
+    @SuppressWarnings("rawtypes")
+	protected AdapterView mContent;
     protected DragController mDragController;
 
     protected Launcher mLauncher;
@@ -57,7 +58,8 @@ public class Folder extends LinearLayout implements DragSource, OnItemLongClickL
         setAlwaysDrawnWithCacheEnabled(false);
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     protected void onFinishInflate() {
         super.onFinishInflate();
 
@@ -123,7 +125,8 @@ public class Folder extends LinearLayout implements DragSource, OnItemLongClickL
      *
      * @param adapter The list of applications to display in the folder.
      */
-    void setContentAdapter(Adapter adapter) {
+    @SuppressWarnings("unchecked")
+	void setContentAdapter(Adapter adapter) {
         mContent.setAdapter(adapter);
     }
 

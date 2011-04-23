@@ -326,7 +326,8 @@ public abstract class WidgetSpace extends ViewGroup {
 
     // listview informations storage for each provider data Uri
     class ScrollViewInfos {
-        AdapterView lv = null;
+        @SuppressWarnings("rawtypes")
+		AdapterView lv = null;
         int widgetId = -1;
         ContentObserver obs;
         Handler obsHandler;
@@ -346,7 +347,8 @@ public abstract class WidgetSpace extends ViewGroup {
     }
 
     // Unbind ressource of scrollable widget
-    public synchronized boolean unbindWidgetScrollable() {
+    @SuppressWarnings("unchecked")
+	public synchronized boolean unbindWidgetScrollable() {
         for (ScrollViewInfos item : mScrollViewCursorInfos.values()) {
             if (item.lv != null) {
                 if (CLEAR_DATA_CACHE) {
@@ -374,7 +376,8 @@ public abstract class WidgetSpace extends ViewGroup {
 
         return false;
     }
-    public synchronized boolean unbindWidgetScrollableId(int widgetId) {
+    @SuppressWarnings("unchecked")
+	public synchronized boolean unbindWidgetScrollableId(int widgetId) {
     	Log.d(TAG, "trying to completely unallocate widget ID="+widgetId);
         CharSequence keyToDelete=null;
     	for (ScrollViewInfos item : mScrollViewCursorInfos.values()) {
@@ -482,7 +485,8 @@ public abstract class WidgetSpace extends ViewGroup {
             }
         }
 
-        private synchronized String makeScrollable(Context context, Intent intent,
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+		private synchronized String makeScrollable(Context context, Intent intent,
                 AppWidgetHostView widgetView) {
             // get the dummy view to replace
             final int dummyViewId = intent.getIntExtra(LauncherIntent.Extra.EXTRA_VIEW_ID, -1);
@@ -640,7 +644,8 @@ public abstract class WidgetSpace extends ViewGroup {
             }
         }
 
-        private synchronized String releaseScrollable(Context context, Intent intent,
+        @SuppressWarnings("unchecked")
+		private synchronized String releaseScrollable(Context context, Intent intent,
                 AppWidgetHostView widgetView) {
 
             try {
