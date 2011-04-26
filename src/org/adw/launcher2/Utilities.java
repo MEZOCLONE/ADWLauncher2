@@ -389,10 +389,6 @@ public final class Utilities {
         }
     }
 
-    static Drawable drawReflection(Bitmap icon,Context context){
-    	return drawReflection(new FastBitmapDrawable(icon), context);
-    }
-
     /**
      *  ADW Create an icon drawable with reflection :P
      *  Thanks to http://www.inter-fuser.com/2009/12/android-reflections-with-bitmaps.html
@@ -400,35 +396,24 @@ public final class Utilities {
      * @param context
      * @return
      */
-    static Drawable drawReflection(Drawable icon,Context context){
+    static Drawable drawReflection(Bitmap icon,Context context){
         final Resources resources=context.getResources();
         sIconWidth = sIconHeight = (int) resources.getDimension(android.R.dimen.app_icon_size);
-        //The gap we want between the reflection and the original image
-        final float scale=1.30f;
-
         int width = sIconWidth;
         int height = sIconHeight;
-        float ratio=sIconHeight/(sIconHeight*scale);
-        Bitmap original;
-        try{
-            original= Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        } catch (OutOfMemoryError e) {
-            return icon;
-        }
-        final Canvas cv = new Canvas();
-        cv.setBitmap(original);
-        icon.setBounds(0,0, width, height);
-        icon.draw(cv);
+        //this is the size of the full icon after applying the reflection
+        //1.30f means icon=1f, reflection=0.3f
+        final float scale=1.30f;
         //This will not scale but will flip on the Y axis
         Matrix matrix = new Matrix();
         matrix.preScale(1, -1);
-      //Create a Bitmap with the flip matix applied to it.
+        //Create a Bitmap with the flip matix applied to it.
         //We only want the bottom half of the image
         Bitmap reflectionImage;
         try{
-            reflectionImage= Bitmap.createBitmap(original, 0, height/2, width, height/2, matrix, false);
+            reflectionImage= Bitmap.createBitmap(icon, 0, height/2, width, height/2, matrix, false);
         } catch (OutOfMemoryError e) {
-            return new FastBitmapDrawable(original);
+            return new FastBitmapDrawable(icon);
         }
 
         //Create a new bitmap with same width but taller to fit reflection
@@ -437,7 +422,7 @@ public final class Utilities {
             bitmapWithReflection= Bitmap.createBitmap(width
           , (int) (height*scale), Config.ARGB_8888);
         } catch (OutOfMemoryError e) {
-            return new FastBitmapDrawable(original);
+            return new FastBitmapDrawable(icon);
         }
 
        //Create a new Canvas with the bitmap that's big enough for
@@ -451,7 +436,7 @@ public final class Utilities {
 
        //Create a shader that is a linear gradient that covers the reflection
        Paint paint = new Paint();
-       LinearGradient shader = new LinearGradient(0, original.getHeight(), 0,
+       LinearGradient shader = new LinearGradient(0, icon.getHeight(), 0,
          bitmapWithReflection.getHeight(), 0x70ffffff, 0x00ffffff,
          TileMode.CLAMP);
        //Set the paint to use this shader (linear gradient)
@@ -462,13 +447,12 @@ public final class Utilities {
        canvas.drawRect(0, height-6, width,
          bitmapWithReflection.getHeight(), paint);
        //Draw in the original image
-       canvas.drawBitmap(original, 0, 0, null);
-       original.recycle();
+       canvas.drawBitmap(icon, 0, 0, null);
        reflectionImage.recycle();
        try{
-           return new FastBitmapDrawable(Bitmap.createScaledBitmap(bitmapWithReflection,Math.round(sIconWidth*ratio),sIconHeight,true));
+           return new FastBitmapDrawable(bitmapWithReflection);
        }catch(OutOfMemoryError e){
-           return icon;
+           return new FastBitmapDrawable(icon);
        }
     }
 
